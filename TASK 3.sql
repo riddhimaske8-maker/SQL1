@@ -1,0 +1,165 @@
+--Task 1:
+--1.--create table customer_details(customer_id varchar primary key,customer_name varchar(1060) not null,age int check(age between 18 and 100),contact_number bigint unique,email varchar(150) unique not null,pancard_no varchar(20)unique,aadhaar_card_no bigint unique,area varchar(100),city varchar(50),state varchar(50),zipcode int);
+--copy customer_details from 'C:\Users\HP\Downloads\customer_details - customer_details.csv' delimiter ',' csv header;
+--2.--create table employee_details(employee_id serial primary key,FirstName varchar(100),LastName varchar(100),Department varchar(50),City varchar(50),manager_id int,Salary int check (salary > 0),constraint fk_manager foreign key(manager_id) references employee_details(employee_id));
+--copy employee_details from 'C:\Users\HP\Downloads\employee_details - employee_details (1).csv' delimiter ',' csv header;
+--3.--create table order_details(order_id varchar primary key,order_date date not null,customer_id varchar not null,order_status varchar(30)
+--,CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customer_details(customer_id),payment_mode varchar,total_amount numeric);
+--copy order_details from 'C:\Users\HP\Downloads\order_details - order_details.csv' delimiter',' csv header;
+--4.--create table product_details(product_id varchar primary key,product_name varchar(150)not null,category varchar(100),price_inr numeric(10,2)check(price_inr>0));
+--copy product_details from 'C:\Users\HP\Downloads\product_details - product_details.csv' delimiter ',' csv header;
+--5.--create table sale_details(sale_id varchar primary key,order_id varchar not null,product_id varchar not null ,quantity_sold int check(quantity_sold>0),unit_price numeric(10,2),discount_pct numeric(5,2),tax_pct numeric(5,2),line_total numeric(10,2),delivery_date date,  
+--CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES order_details(order_id),
+--CONSTRAINT fk_product FOREIGN KEY (product_id)REFERENCES product_details(product_id));
+--copy sale_details from 'C:\Users\HP\Downloads\sale_details - sale_details.csv' delimiter ',' csv header;
+--set datestyle = 'MDY';
+--Task 2:
+--1.--select o.* from order_details o join customer_details c on o.customer_id = c.customer_id where c.city in ('Mumbai', 'Pune');
+--2.--select * from product_details where price_inr between 5000 and 50000;
+--3.--select * from customer_details where city in ('Mumbai','Nagpur','Pune');
+--4.--select * from order_details where order_status = 'Delivered' and payment_mode = 'UPI';
+--5.--select * from sale_details where quan > 2 and tax_pct =0.18;
+--Task 3:
+--1.--update order_details set order_status = 'cancelled'where total_amount< 500 and order_status <> 'cancelled';
+--2.--update employee_details set salary = salary * 1.10 where department = 'HR';
+--3.--update customer_details set city = 'Mumbai' where area ='Andheri';
+--4.--update product_details set product_name = 'Laptop' where category = 'Electonics';
+--5.--update customer_details set email = concat(email,'@',1,'@company.com') where email ILIKE '%@gmail.com';
+--Task 4:
+--1.--select sum(total_amount) as total_revenue from order_details;
+--2.--select avg(salary) as department from employee_details;
+--3.--select order_status, count(*) as total_orders from order_details group by order_status order by total_orders DESC;
+--4.--select category,MAX(price_inr) as highest_price,MIN(price_inr) as lowest_price from product_details group by category;
+--5.--select product_id,SUM(quantity_sold) As quantity_sold from sale_details group by product_id ;
+--Task 5;
+--1.--select * from product_details order by price_inr DESC limit 5;
+--2.--select * from order_details order by order_date DESC limit 3;
+--3.--select  distinct city from customer_details ;
+--4.--select customer_id,SUM(total_amount) as total_amount from order_details group by customer_id order by total_amount DESC limit 10;
+--5.--select * from order_details order by order_id limit 5 offset 5;
+--Task 6;
+--1.--select UPPER(customer_name) as customer_name_upper from customer_details;
+--2.--select left(product_name,9) as product_code from product_details;
+--3.--select firstname || ' ' || lastname as full_name from employee_details;
+--4.select length(customer_name) as char_length from customer_details;
+--5.select product_name, replace(product_name,'','_') as product_name_system from product_details;
+--Task 7;
+--1.--select order_id,extract(year from order_date) as order_year,extract(month from order_date)as order_month from order_details;
+--2.--select order_id,order_date,order_date - LAG(order_date)over (order by order_date) as days_between_orders from order_details;
+--3.--select cast(delivery_date()as date) as system_date,delivery_date() as system_timestamp;
+--4.--select * from order_details where order_date >= '2024-09-01' and order_date < '2024-10-01';
+--5.--select order_id,order_date,order_date + interval '7 days' as expected_delivery_date from order_details;
+--Task 8;
+--1.select product_id,round(price_inr,2) as rounded_price from product_details;
+--2.select order_id,unit_price,discount_pct,round(unit_price *(1 - discount_pct),2) as final_price from sale_details;
+--3.select employee_id,expected_salary,actual_salary,ABS(salary-salary) as salary_variance from payroll;
+--4.select employee_id,salary,power(salary,2)as salary_power from employee_details;
+--5.select order_id,RANDOM() * 25*5 as random_discount_percent from order_details;
+--Task 9;
+--1.select c.customer_id,c.customer_name,o.order_id,o.order_date from customer_details c inner join order_details o on c.customer_id = o.customer_id;
+--2.select o.order_id,o.order_date,s.product_id,s.quantity_sold,s.unit_price from sale_details s left join order_details o on o.order_id = s.order_id;
+--3.select p.product_id,p.product_name,sum(s.quantity_sold) as total_quantity_sold from product_details p left join sale_details s on p.product_id = s.product_id group by p.product_id,p.product_name;
+--4.select c.customer_id,c.customer_name,o.order_id from customer_details c full outer join order_details o on c.customer_id = o.customer_id;
+--5.select o.order_id,o.order_date,p.product_name,s.quantity_sold,s.unit_price,(s.quantity_sold * s.unit_price) as line_total from order_details o join sale_details s on o.order_id = s.order_id join product_details p on s. product_id = p. product_id; 
+--6.select c.customer_name,sum(s.quantity_sold * s.unit_price) as total_order_value from customer_details c join order_details o ON c.customer_id = o.customer_id join sale_details s on o.order_id = s.order_id group by c.customer_name;
+--7.select p.product_id,p.product_name,sum(s.quantity_sold) as total_quantity_sold from product_details p left join sale_details s on p.product_id=s.product_id group by p.product_id,p.product_name;
+--8.select e.firstname as employee,m.firstname as manager from employee_details e left join employee_details m on e.manager_id = m.employee_id;
+--9.select e.firstname as employee,e.salary as salary,m.firstname as manager,m.salary as manager_salary from employee_details e inner join employee_details m on e.manager_id = m.employee_id where e.salary > m.salary;
+--10.select d.department,count(e.employee_id) as department from employee_details d left join employee_details e on d.department = e.department group by d.department;
+--Task 10;
+--1.select city from customer_details 
+--UNION
+--select city from employee_details;
+--2.select city from customer_details 
+--UNION ALL
+--select city from employee_details;
+--3.select city from customer_details 
+--INTERSECT
+--4.select city from employee_details;
+--select city from customer_details 
+--EXCEPT
+--select city from employee_details;
+--5.select city from customer_details
+--INTERSECT
+---select city from employee_details 
+--INTERSECT
+--select city from order_details;
+--Task 11;
+--1.select order_id,coalesce(payment_mode, 'Not initiated') as payment_mode from order_details;
+--2.select product_id,quantity_sold/ NULLIF(quantity_sold, 0) as avg_price from sale_details;
+--3.select employee_id,greatest(salary) as highest_salary_component from employee_details;
+--4.select product_id,least(price_inr) as lowest_product_price from product_details;
+--5.select customer_id,coalesce(city,'Unknown') as city from customer_details;
+--Task 12;
+--1.select * from employee_details where salary > (select avg(salary) from employee_details);
+--2.select p.* from product_details p where price_inr > (select avg(price_inr) from product_details where category = p.category);
+--3.select * from customer_details where customer_id in (select customer_id from order_details group by customer_id having count(order_id)>3);
+--4.select * from order_details where total_amount > (select avg(total_amount)from order_details);
+--5.select department from employee_details group by department having avg(salary) = (select max(avg_salary)from(select avg(salary)as avg_salary from employee_details group by department)dept_avg);
+--6.select * from employee_details e where salary =(select max(salary)from employee_details where department = e.department);
+--7.select * from customer_details c where not exists(select 1 from order_details o where o.customer_id = c.customer_id);
+--select * from order_details where not exists(select 1 from order_status where oi.order_id = pi.order_id);
+--9.select * from order_details where total_amount =(select max(total_amount)from order_details);
+--10.select customer_id,sum(total_amount) as lifetime_value from order_details group by customer_id having sum(total_amount) = (select max(total_value) from 
+--(select sum(total_amount) as total_value from order_details group by customer_id ) customer_totals );
+--Task 13;
+--1.create view vw_customer_order_summary as select c.customer_id,c.customer_name,count(o.order_id) as total_orders,coalesce(sum(o.total_amount),0) as total_spent,max(o.order_date)as last_order_date from customer_details c left join order_details o on c.customer_id = o.customer_id group by c.customer_id,c.customer_name;
+--2.create view vw_product_sales_performance as select product_id,sum(quantity_sold * unit_price) as revenue from sale_details group by product_id;
+--3.create materialized view mv_monthly_revenue as select date_trunc('month',order_date) as revenue_month,sum(total_amount) as  monthly_revenue,count(order_id)as total_orders from order_details group by date_trunc('month',order_date); 
+--4.refresh materialized view mv_monthly_revenue;
+--Views VS Materialized Views:
+--Views :
+--.Use views as logical reporting layer
+--.You need real-time accuracy
+--.Queries are lightweight
+--.Building a sematic/reporting layer
+-- Materialized Views:
+--.Queries are expensive(join + aggregates)
+--.Data updates are batch-based
+--.Performance is critical for BI tools
+--.time_series aggregations
+--KPIs and dashboards
+--High_concurrency reporting;
+--Task 14:
+--1.create temp table temp_high_value_orders as select * from order_details where total_amount > 5000;
+--2.insert into temp_high_value_orders select * from order_details where total_amount between 3000 and 5000;
+--3.with dept_salary as (select department,avg(salary)as avg_salary from employee_details group by department)select * from dept_salary;
+--4.with customer_spend as (select customer_id,sum(total_amount) as total_spend from order_details group by customer_id)select * from customer_spend where total_spend > 10000;
+--5.with customer_spend as(select customer_id,sum(total_amount) as total_spent from order_details group by customer_id),premium_customers as(select * from customer_spend where total_spent > 10000)
+--select * from premium_customers;
+--6.with recursive emp_hierarchy as (select employee_id,firstname,manager_id,1 as level from employee_details where manager_id is null
+--union all
+--select e.employee_id,e.firstname,e.manager_id, h.level + 1from employee_details e join emp_hierarchy h on e.manager_id = h.employee_id)
+--select * from emp_hierarchy;
+--7.select * from employee_details where manager_id is null;
+--8.WITH RECURSIVE hierarchy AS ( SELECT employee_id, manager_id, 1 AS depth FROM employee_details WHERE manager_id IS NULL
+--UNION ALL
+--SELECT e.employee_id, e.manager_id, h.depth + 1 FROM employee_details e JOIN hierarchy h ON e.manager_id = h.employee_id)
+--SELECT MAX(depth) AS max_depth FROM hierarchy;
+--9.WITH RECURSIVE chain AS (SELECT employee_id, firstname, manager_id, firstname::TEXT AS path FROM employee_details WHERE manager_id IS NULL
+--UNION ALL
+--SELECT e.employee_id, e.firstname, e.manager_id,c.path || ' → ' || e.firstname FROM employee_details e
+--JOIN chain c ON e.manager_id = c.employee_id)
+--SELECT * FROM chain;
+--10.drop table if exists high_value_orders;
+--Task 15.WINDOW FUNCTIONS;
+--1. select employee_id , firstname, department , salary, 
+--RANK() over (Partition by department order by salary DESC) from employee_details;
+--2.select product_id,product_name,category,price_inr,
+--DENSE_RANK() over (Partition by category order by price_inr DESC ) as rank from product_details;
+--3.select order_id,order_date,total_amount,
+--SUM(total_amount) over (order by order_date) as running_total from order_details;
+--4.select order_id,order_date,total_amount,
+--AVG(total_amount) over(order by order_date rows between 2 preceding and current row) as moving_avg from order_details;
+--5.select order_id,customer_id,order_date,total_amount,
+--LAG(total_amount) over (Partition by customer_id order by order_date) as prev_order from order_details;
+--6.select employee_id,firstname,salary, LAG(salary) over (order by employee_id) as previous_salary from employee_details;
+--7.select customer_id,order_date,LEAD(order_date) over (partition by customer_id order by order_date) as next_order from order_details;
+--8.select customer_id,order_status,total_amount,SUM(total_amount) over(Partition by customer_id order by order_date) as cumulative_spend from order_details;
+--9. delete from order_details where order_id in(select order_id from (select order_id,row_number() over (Partition by customer_id, order_date, total_amount order by order_id)
+-- from order_details)
+-- sub
+-- where row_number > 1);
+--10.select * from (select product_id,product_name,category,price_inr, RANK() over (Partition by category order by price_inr DESC) as rank from product_details)
+--ranked
+--where rank <= 3;
